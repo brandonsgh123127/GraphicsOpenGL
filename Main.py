@@ -8,11 +8,11 @@ from pygame.locals import *
 
 class ShapesDraw(object):
     def __init__(self):
-        print("")
         identity = ''#identifies shape
 
     Vertices = (())
     Edges = (())
+    Colors = (())
     #  Used to get viewpoint of vertices...  To be implemented...
     viewPoint = []
 
@@ -51,12 +51,27 @@ class ShapesDraw(object):
                  (5, 4),  # top to bottom
                  (5, 7)  # top to top
                  )
+
+        self.Colors = ((1,0,0),
+                       (0, 1, 0),
+                       (0, 0, 1),
+                       (0, 1, 0),
+                       (1, 1, 1),
+                       (0, 1, 1),
+                       (1, 0, 0),
+                       (0, 1, 0),
+                       (0, 0, 1),
+                       (1, 0, 0),
+                       (1, 1, 1),
+                       (0, 1, 1))
         glBegin(GL_LINES)  # Treats as independent line segments
         for edge in self.Edges:  # Loop that will connect vertices and create edges
+            x = 0
             for vertex in edge:
+                x= x+1
+                glColor3fv(self.Colors[x])
                 glVertex3fv(self.Vertices[vertex])  # print("vertex: ",vertex)
         glEnd()
-        glPushMatrix()
 
     def Rectangle(self):
         self.identity = 'Rectangle'
@@ -122,12 +137,14 @@ class ShapesDraw(object):
     def rotRight(self):
         if (self.identity == 'Cube'):
             self.drawGLScene(3)
-    def drawGLScene(self,int):
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        glLoadIdentity()
-        glRotatef(3, -3, 3,3)
-        print("In here!")
-        glPopMatrix()
+
+
+def drawGLScene(f):
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glLoadIdentity()
+    #glRotatef(1, -0, f,f)
+    print("In here!")
+    glPopMatrix()
 
 
 
@@ -139,32 +156,61 @@ def main():
     pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
 
     # field of view y, x direction fov, closest edge, furthest edge
+    glMatrixMode(GL_PROJECTION);
     gluPerspective(90, (display[0] / display[1] + 0.66), 0.3, 50.0)  # fovy, aspect, znear, zfar
     glTranslatef(0.5, -1, -8)
-    #glRotatef(30, 5, 10, 3)
-
-
 
     while True:
+        glPushMatrix()
+        glLoadIdentity()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit()
-        # glRotatef(1, 0, 1, 1)
-        # glRotatef(1, 0, 0, 0)# slowly gets further away
-        # glRotatef(1, 2, 0, 0)#rotates y
-        # glRotatef(1, 0, 2, 0)#rotates x
-        glRotatef(1, 0, 1, 0)
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RIGHT:
+                    glPopMatrix()
+                    glTranslatef(1,0,0)
+                    glPushMatrix()
+                if event.key == pygame.K_LEFT:
+                    glPopMatrix()
+                    glTranslatef(-1,0,0)
+                    glPushMatrix()
+                if event.key == pygame.K_UP:
+                    glPopMatrix()
+                    glTranslatef(0,1,0)
+                    glPushMatrix()
+                if event.key == pygame.K_DOWN:
+                    glPopMatrix()
+                    glTranslatef(0,-1,0)
+                    glPushMatrix()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_position = pygame.mouse.get_pos()
+                print("mouse pos: ", mouse_position[0],mouse_position[1])
+                glPopMatrix()
+                glRotatef(1,mouse_position[1]-(display[1]/2),mouse_position[0]-
+                          (display[0]/2),1)
+                print("rotated:  ",mouse_position[0]-(display[0]/2),
+                                    mouse_position[1]-(display[1]/2)),
+                glPushMatrix()
+        glPopMatrix()
+        #glPushMatrix()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         cube = ShapesDraw()
         cube.Cube()
+
+
         rectangle = ShapesDraw()
         rectangle.Rectangle()
+
+
         pyramid = ShapesDraw()
         pyramid.Pyramid()
 
-        cube.rotRight()
         pygame.display.flip()
-        pygame.time.wait(2)
+        pygame.time.wait(10)
 
+        #glPopMatrix()
+        #glPopMatrix()
+        #glPopMatrix()
 
 main()
