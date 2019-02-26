@@ -5,6 +5,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 import pygame
 from pygame.locals import *
+import ctypes
 
 class ShapesDraw(object):
     def __init__(self):
@@ -13,6 +14,7 @@ class ShapesDraw(object):
     Vertices = (())
     Edges = (())
     Colors = (())
+    pos = (())
     #  Used to get viewpoint of vertices...  To be implemented...
     viewPoint = []
 
@@ -73,7 +75,7 @@ class ShapesDraw(object):
                 glVertex3fv(self.Vertices[vertex])  # print("vertex: ",vertex)
         glEnd()
 
-    def Rectangle(self):
+    def Rectangle(self, width, height):
         self.identity = 'Rectangle'
 
         self.Vertices = ((4, -1, -2),  # 0, x 2, y -2 to 2, z -2  BOTTOM CORNER
@@ -106,6 +108,8 @@ class ShapesDraw(object):
             for vertex in edge:
                 glVertex3fv(self.Vertices[vertex])  # print("vertex: ",vertex)
         glEnd()
+    def getObjDim(self):
+        return (())
 
     #xpos, ypos, zpos, (base, width, height)
     def Pyramid(self):
@@ -152,7 +156,10 @@ def drawGLScene(f):
 
 def main():
     pygame.init()
-    display = (1200, 900)
+    user32 = ctypes.windll.user32
+    screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+    display = (screensize[0], screensize[1])
+    isTrue = True
     pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
 
     # field of view y, x direction fov, closest edge, furthest edge
@@ -160,7 +167,7 @@ def main():
     gluPerspective(90, (display[0] / display[1] + 0.66), 0.3, 50.0)  # fovy, aspect, znear, zfar
     glTranslatef(0.5, -1, -8)
 
-    while True:
+    while isTrue:
         glPushMatrix()
         glLoadIdentity()
         for event in pygame.event.get():
@@ -183,11 +190,12 @@ def main():
                     glPopMatrix()
                     glTranslatef(0,-1,0)
                     glPushMatrix()
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_position = pygame.mouse.get_pos()
                 print("mouse pos: ", mouse_position[0],mouse_position[1])
                 glPopMatrix()
-                glRotatef(1,mouse_position[1]-(display[1]/2),mouse_position[0]-
+                glRotatef(2,mouse_position[1]-(display[1]/2),mouse_position[0]-
                           (display[0]/2),1)
                 print("rotated:  ",mouse_position[0]-(display[0]/2),
                                     mouse_position[1]-(display[1]/2)),
@@ -209,8 +217,7 @@ def main():
         pygame.display.flip()
         pygame.time.wait(10)
 
-        #glPopMatrix()
-        #glPopMatrix()
-        #glPopMatrix()
+        #print(glGetDoublev(GL_MODELVIEW_MATRIX))
+
 
 main()
