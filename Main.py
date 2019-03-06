@@ -1,6 +1,7 @@
 import glfw
 import time
 #import PyOpenGL
+import numpy as np
 from OpenGL.GL import *
 from OpenGL.GLU import *
 import pygame
@@ -24,6 +25,8 @@ class ShapesDraw(object):
             for point in vertex:
                 print(point)
                 Vertices[vertex[point]] = Vertices[vertex[point]] * viewPoint[0]
+
+
 
 #,xpos,ypos,zpos,(width,height)
     def Cube(self):
@@ -143,6 +146,28 @@ class ShapesDraw(object):
             self.drawGLScene(3)
 
 
+ground_surfaces = (0, 1, 2, 3)
+
+ground_vertices = (
+    (-10, -0.1, 50),
+    (10, -0.1, 50),
+    (-10, -0.1, -300),
+    (10, -0.1, -300),
+
+    )
+
+def Ground():
+
+    glBegin(GL_QUADS)
+
+    x = 0
+    for vertex in ground_vertices:
+        x += 1
+        glColor3fv((0, 1, 1))
+        glVertex3fv(vertex)
+
+    glEnd()
+
 def drawGLScene(f):
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
@@ -168,7 +193,14 @@ def main():
     glTranslatef(0.5, -1, -8)
 
     while isTrue:
+        Ground()
         glPushMatrix()
+        mv_matrix = glGetFloatv(GL_MODELVIEW_MATRIX) #  GETS MATRIX VALUES AND STORES THEM IN VAR
+        left, up, forward, position = [v / (np.linalg.norm(v)) for v in mv_matrix[:, :3]]
+        print("left ",left)
+        print("up ",up)
+        print("forward ",forward)
+        print("pos ",position)
         glLoadIdentity()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -190,7 +222,19 @@ def main():
                     glPopMatrix()
                     glTranslatef(0,-1,0)
                     glPushMatrix()
-
+                #  used to test z rotate, x rotate, y rotate
+                if event.key == pygame.K_z:
+                    glPopMatrix()
+                    glRotatef(1,0,0,1)
+                    glPushMatrix()
+                if event.key == pygame.K_x:
+                    glPopMatrix()
+                    glRotatef(1,1,0,0)
+                    glPushMatrix()
+                if event.key == pygame.K_y:
+                    glPopMatrix()
+                    glRotatef(1,0,1,0)
+                    glPushMatrix()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_position = pygame.mouse.get_pos()
                 print("mouse pos: ", mouse_position[0],mouse_position[1])
@@ -206,9 +250,8 @@ def main():
         cube = ShapesDraw()
         cube.Cube()
 
-
         rectangle = ShapesDraw()
-        rectangle.Rectangle()
+        rectangle.Rectangle(2,3)
 
 
         pyramid = ShapesDraw()
