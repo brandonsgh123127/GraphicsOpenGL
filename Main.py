@@ -1,8 +1,9 @@
 import math
 
-import glfw
 import time
 #import PyOpenGL
+from smtpd import program
+
 import numpy as np
 from OpenGL.GL import *
 from OpenGL.GLU import *
@@ -12,18 +13,18 @@ from pygame.locals import *
 import ctypes
 import Shapes
 
-
+global perspective
 display = [0,0]
-def init():
+def createWindow():
+    global perspective
     pygame.init()
     user32 = ctypes.windll.user32
     screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
     display = (screensize[0], screensize[1])
-
     pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
     # field of view y, x direction fov, closest edge, furthest edge
     glMatrixMode(GL_PROJECTION);
-    gluPerspective(90, (display[0] / display[1] + 0.66 ), 0.3, 50.0)  # fovy, aspect, znear, zfar
+    perspective = gluPerspective(120, (display[0] / display[1] + 0.66 ), 0.3, 50.0)  # fovy, aspect, znear, zfar
     glTranslatef(0.5, -1, -8)
 
 def getKeys():
@@ -32,13 +33,13 @@ def getKeys():
             quit()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RIGHT:
-                glTranslatef(1, 0, 0)
-            if event.key == pygame.K_LEFT:
                 glTranslatef(-1, 0, 0)
+            if event.key == pygame.K_LEFT:
+                glTranslatef(1, 0, 0)
             if event.key == pygame.K_UP:
-                glTranslatef(0, -1, 0)
+                glTranslatef(0, 0, 1)
             if event.key == pygame.K_DOWN:
-                glTranslatef(0, 1, 0)
+                glTranslatef(0, 0, -1)
             #  used to test z rotate, x rotate, y rotate
             if event.key == pygame.K_z:
                 glRotatef(1, 0, 0, 1)
@@ -46,45 +47,38 @@ def getKeys():
                 glRotatef(1, 1, 0, 0)
             if event.key == pygame.K_y:
                 glRotatef(1, 0, 1, 0)
-            if event.key == pygame.K_LCTRL:
-                zoomOut()
-            if event.key == pygame.K_LSHIFT:
-                zoomIn()
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_position = pygame.mouse.get_pos()
             glRotatef(2, mouse_position[1] - (display[1] / 2), mouse_position[0] -
                       (display[0] / 2), 1)
-    glPushMatrix
-    glLoadIdentity
-    glPopMatrix
-
 def main():
-    init()
+    global objArr
+    createWindow()
     projection = glGetFloatv(GL_PROJECTION_MATRIX)  # MATRICES VALUES....
     print(projection)
+    # Creates objects at origin 0,0,0
     cube = Shapes.Cube(5)
     rectangle = Shapes.Rectangle(3, 5, 4)
     pyramid = Shapes.Pyramid(3, 4, 5)
+    objArr ={cube,
+    rectangle,
+    pyramid}
 
     while True:
-        print(projection)
         glLoadIdentity
         getKeys()
         mv_matrix = glGetFloatv(GL_MODELVIEW_MATRIX) #  GETS MATRIX VALUES AND STORES THEM IN VAR
-        projection = glGetFloatv(GL_PROJECTION_MATRIX)
         left, up, forward, position = [v / (np.linalg.norm(v)) for v in mv_matrix[:, :3]]
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-
+        for i in objArr:
+            i.update()
         #UPDATES DIMENSIONS OF EACH OBJECT
+        cube.update()
         cube.updateColor()
         rectangle.update()
         pyramid.update()
-
-        print(projection)#Print Matrix values out
         pygame.display.flip()
         pygame.time.wait(100)
-        #print(glGetDoublev(GL_MODELVIEW_MATRIX))
-
 
 
 #GETS DIMENSIONS OF OBJECT
@@ -111,18 +105,6 @@ def checkClick(obj):
             glVertex3fv(obj.Vertices[vertex])
     glEnd()
     glColor3f(1, 1 - onRect2, 1 - onRect2)
-
-def zoomOut():
-    glTranslatef(0,0,-.5)
-def zoomIn():
-    glTranslatef(0,0,0.5)
-
-
-#calculate angle of 2 vectors
-def angle_calculation(a,b):
-    cos_a = np.dot(a, b) / (np.linalg.norm(a)*np.linalg.norm(b))
-    r = math.degrees(math.acos(min(1, max(cos_a,-1)) ))
-    return r
 
 
 
