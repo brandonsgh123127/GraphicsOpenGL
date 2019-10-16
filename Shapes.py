@@ -1,13 +1,8 @@
 import math
-
 import time
 #import PyOpenGL
 import numpy as np
 from OpenGL.GL import *
-from OpenGL.GLU import *
-#import pygame
-#from pygame.examples.prevent_display_stretching import user32
-#from pygame.locals import *
 import ctypes
 
 
@@ -22,7 +17,6 @@ import ctypes
 class Shapes:
     def __init__(self):
         print("New Shape Created!")
-
     def update(self):
         glBegin(GL_LINES)  # Treats as independent line segments
         for edge in self.Edges:
@@ -36,14 +30,26 @@ class Shapes:
             x = 0
             for vertex in edge:
                 x = x + 1
-                glColor3fv(self.Colors[x])
-                glVertex3fv(self.Vertices[vertex])  # print("vertex: ",vertex)
+                try:
+                    glColor3fv(self.Colors[x])
+                    glVertex3fv(self.Vertices[vertex])  # print("vertex: ",vertex)
+                except:
+                    glVertex3fv(self.Vertices[vertex])
         glEnd()
-    def movePixels(self):
-        glBegin(GL_LINES)
-
-
-
+    def getIdentity(self):
+        return self.identity
+    def getVertices(self):
+        return self.Vertices
+    def getEdges(self):
+        return self.Edges
+    def setIdentity(self,name):
+        self.identity = name
+    def manipulateShape(self,arg1=None,arg2=None,arg3=None): # Manipulate the Position of Shape
+        for vertex in self.Vertices:
+            for i in range(0,1):
+                vertex[i]+=arg1
+                vertex[i+1] += arg2
+                vertex[i+2] += arg3
 class Cube(Shapes):
     #,xpos,ypos,zpos,(width,height)
     def __init__(self, x):
@@ -60,15 +66,12 @@ class Cube(Shapes):
         self.Edges = np.array([[1, 0],  # bottom to top
                  [1, 3],  # bottom to bottom
                  [1, 4],  # bottom to bottom
-
                  [2, 0],  # top to top
                  [2, 3],  # top to bottom
                  [2, 7],  # top to top
-
                  [6, 3],  # bottom to bottom
                  [6, 4],  # bottom to bottom
                  [6, 7],  # bottom to top
-
                  [5, 0],  # top to top
                  [5, 4],  # top to bottom
                  [5, 7]  # top to top
@@ -86,7 +89,6 @@ class Cube(Shapes):
                        [1, 0, 0],
                        [100, 1, 100],
                        [0, 100, 100]])
-        self.updateColor()
 class Rectangle(Shapes):
     def __init__(self, len, width, height):
         self.identity = 'Rectangle'
@@ -115,11 +117,9 @@ class Rectangle(Shapes):
                  [5, 3],  # top to bottom
                  [5, 7]]  # top to top
                  )
-        self.update()
 class Pyramid(Shapes):
     def __init__(self,len,width,height):
         self.identity = 'Pyramid'
-
         self.Vertices = np.array([[0, height, 0],  # 1  TOP
                         [len/2, 0, -(width/2)],  # 3
                         [len/2, 0, width/2],  # 2
@@ -130,16 +130,8 @@ class Pyramid(Shapes):
                      [0, 2],  #
                      [0, 3],
                      [0, 4],  #
-
                      [1, 3],  # 3 to 4
-                     [1, 2],  # 3 to 2
-
+                     [1, 2],  # 3 to
                      [4, 3],  #
                      [4, 2]],  #
                       )
-
-        self.update()
-
-
-
-
