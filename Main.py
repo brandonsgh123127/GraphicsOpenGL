@@ -33,7 +33,7 @@ def createWindow():
     perspective = gluPerspective(100, (display[0] / display[1]), 0.1, 25.0)  # fovy, aspect, znear, zfar
 
 def getKeys():
-    global objArr,isRunning
+    global objArr,isRunning,projection
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             quit()
@@ -66,6 +66,7 @@ def getKeys():
                 selectObjPopUp()
             if event.key == pygame.K_p:
                 print(projection)
+            projection = glGetFloatv(GL_PROJECTION_MATRIX)
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_position = pygame.mouse.get_pos()
             glRotatef(2, mouse_position[1] - (display[1] / 2), mouse_position[0] -
