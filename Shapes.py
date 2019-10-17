@@ -22,6 +22,7 @@ class Shapes:
         for edge in self.Edges:
             for vertex in edge:
                 glVertex3fv(self.Vertices[vertex])
+
         glEnd()
 
     def updateColor(self):
@@ -50,6 +51,7 @@ class Shapes:
                 vertex[i]+=arg1
                 vertex[i+1] += arg2
                 vertex[i+2] += arg3
+
 class Cube(Shapes):
     #,xpos,ypos,zpos,(width,height)
     def __init__(self, x):

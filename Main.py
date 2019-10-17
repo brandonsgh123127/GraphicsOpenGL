@@ -1,8 +1,6 @@
 import math
-
 import time
 #import PyOpenGL
-
 import numpy as np
 from OpenGL.GL import *
 from OpenGL.GLU import *
@@ -11,6 +9,7 @@ from pygame.examples.prevent_display_stretching import user32
 from pygame.locals import *
 import ctypes
 import Shapes
+import CameraManagement
 
 global perspective
 global display
@@ -27,10 +26,9 @@ def createWindow():
     #SETTING THE DISPLAY UP FOR PYGAME
     screen = pygame.display
     screen.set_mode(display, DOUBLEBUF | OPENGL)
-
     glMatrixMode(GL_PROJECTION);
     glPopMatrix
-    perspective = gluPerspective(100, (display[0] / display[1]), 0.1, 25.0)  # fovy, aspect, znear, zfar
+    perspective = gluPerspective(90, (display[0] / display[1]), 0.3, 35.0)  # fovy, aspect, znear, zfar
 
 def getKeys():
     global objArr,isRunning,projection
@@ -76,8 +74,10 @@ def main():
     createWindow()
     projection = glGetFloatv(GL_PROJECTION_MATRIX)  # MATRICES VALUES....
     print(projection)
+    camera = CameraManagement.Camera(projection)
     # Creates objects at origin 0,0,0
     cube = Shapes.Cube(5)
+    camera.rotateXY(10)
     rectangle = Shapes.Rectangle(3, 5, 4)
     pyramid = Shapes.Pyramid(6, 3, 2)
     objArr ={cube,rectangle,pyramid}
@@ -135,7 +135,7 @@ def checkClick(obj):
     glBegin(GL_LINES)
     for edge in obj.Edges:
         for vertex in edge:
-            glVertex3fv(obj.Vertices[vertex])
+            glVertex4fv(obj.Vertices[vertex])
     glEnd()
     glColor3f(1, 1 - onRect2, 1 - onRect2)
 
