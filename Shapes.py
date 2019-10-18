@@ -92,16 +92,16 @@ class Cube(Shapes):
                        [100, 1, 100],
                        [0, 100, 100]])
 class Rectangle(Shapes):
-    def __init__(self, len, width, height):
+    def __init__(self, len, width, height,x=None,y=None,z=None):
         self.identity = 'Rectangle'
-        self.Vertices = np.array([[len/2, height/2, -(width/2)],  # 0, x 2, y -2 to 2, z -2  BOTTOM CORNER
-                    [len/2, -(height/2), -(width/2)],  # 1 TOP CORNER
-                    [-(len/2), height/2, -(width/2)],  # 2 TOP CORNER
-                    [len/2, -(height/2), (width/2)],  # 3 BOTTOM CORNER
-                    [-(len/2), -(height/2), -(width/2)],  # 4 BOTTOM CORNER
-                    [len/2, (height/2), (width/2)],  # 5  TOP CORNER
-                    [-(len/2), -(height/2), (width/2)],  # 6  BOTTOM CORNER
-                    [-(len/2), (height/2), (width/2)]]  # 7   TOP CORNER
+        self.Vertices = np.array([[len/2+x, height/2+y, -(width/2)+z],  # 0, x 2, y -2 to 2, z -2  BOTTOM CORNER
+                    [len/2+x, -(height/2)+y, -(width/2)+z],  # 1 TOP CORNER
+                    [-(len/2)+x, height/2+y, -(width/2)+z],  # 2 TOP CORNER
+                    [len/2+x, -(height/2)+y, (width/2)+z],  # 3 BOTTOM CORNER
+                    [-(len/2)+x, -(height/2)+y, -(width/2)+z],  # 4 BOTTOM CORNER
+                    [len/2+x, (height/2)+y, (width/2)+z],  # 5  TOP CORNER
+                    [-(len/2)+x, -(height/2)+y, (width/2)+z],  # 6  BOTTOM CORNER
+                    [-(len/2)+x, (height/2)+y, (width/2)+z]]  # 7   TOP CORNER
                     )
         self.Edges = np.array([[1, 0],  # bottom to top
                  [1, 4],  # bottom to bottom
@@ -119,6 +119,18 @@ class Rectangle(Shapes):
                  [5, 3],  # top to bottom
                  [5, 7]]  # top to top
                  )
+        self.Colors = np.array([[100, 200, 0],
+                                [0, 100, 200],
+                                [200, 0, 100],
+                                [0, 100, 0],
+                                [155, 0, 100],
+                                [100, 155, 155],
+                                [144, 0, 100],
+                                [0, 144, 0],
+                                [100, 100, 144],
+                                [1, 0, 0],
+                                [100, 1, 100],
+                                [0, 0, 100]])
 class Pyramid(Shapes):
     def __init__(self,len,width,height):
         self.identity = 'Pyramid'
@@ -137,3 +149,8 @@ class Pyramid(Shapes):
                      [4, 3],  #
                      [4, 2]],  #
                       )
+class axes():
+    def __init__(self):
+
+        glBegin(GL_LINES)
+        glLineWidth(4)

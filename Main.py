@@ -11,12 +11,20 @@ import ctypes
 import Shapes
 import CameraManagement
 
+# Open Scope for easy access
 global perspective
 global display
 global objArr
 global screen
 global isRunning
 global projection
+global camera
+
+
+"""
+# CREATE A PYGAME DISPLAY AND OPENGL EVIRONMENT.
+#
+"""
 def createWindow():
     global perspective,screen,display
     pygame.init()
@@ -28,15 +36,28 @@ def createWindow():
     screen.set_mode(display, DOUBLEBUF | OPENGL)
     glMatrixMode(GL_PROJECTION);
     glPopMatrix
-    perspective = gluPerspective(90, (display[0] / display[1]), 0.3, 35.0)  # fovy, aspect, znear, zfar
+    perspective = gluPerspective(90, (display[0] / display[1]), 0.3, 555.0)  # fovy, aspect, znear, zfar
 
+
+"""
+#####################################
+#
+# Function used to find keys pressed
+#
+#####################################
+"""
 def getKeys():
     global objArr,isRunning,projection
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             quit()
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RIGHT:
+            """
+            ###################
+            Translating Shapes
+            ###################
+            """
+            if event.key == pygame.K_RIGHT: #Translating shapes
                 for obj in objArr:
                     obj.manipulateShape(-1,0,0)
                     print(obj.getVertices())
@@ -53,36 +74,57 @@ def getKeys():
                     obj.manipulateShape(0, 0, -1)
                     print(obj.getVertices())
             #  used to test z rotate, x rotate, y rotate
-            if event.key == pygame.K_z:
+            if event.key == pygame.K_z: #Rotate sample on z axis
                 glRotatef(10, 0, 0, 1)
-            if event.key == pygame.K_x:
+            if event.key == pygame.K_x: #Rotate sample on x axis
                 glRotatef(10, 1, 0, 0)
-            if event.key == pygame.K_y:
+            if event.key == pygame.K_y: # Rotate sample
                 glRotatef(10, 0, 1, 0)
-            if event.key == pygame.K_j:
+            if event.key == pygame.K_j: # RESTART GAME FOR NOW
                 isRunning=False
                 selectObjPopUp()
-            if event.key == pygame.K_p:
+            if event.key == pygame.K_p: # DEBUGGING
                 print(projection)
+            if event.key == pygame.K_1: # When key 1 pressed, rotate on x/y axis
+                camera.rotateXY(10)
+                camera.setMatrix(projection)
             projection = glGetFloatv(GL_PROJECTION_MATRIX)
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_position = pygame.mouse.get_pos()
             glRotatef(2, mouse_position[1] - (display[1] / 2), mouse_position[0] -
                       (display[0] / 2), 1)
+"""
+############
+#
+##
+###
+####
+#####
+######
+####### MAIN RUNNER FUNCTION THAT INITIALIZES SHAPES AND LOOPS UNTIL GAME ENDS....
+######
+#####
+####
+###
+##
+#
+############
+"""
 def main():
-    global objArr,isRunning,projection
+    global objArr,isRunning,projection,camera
     createWindow()
     projection = glGetFloatv(GL_PROJECTION_MATRIX)  # MATRICES VALUES....
-    print(projection)
     camera = CameraManagement.Camera(projection)
+    print(projection)
     # Creates objects at origin 0,0,0
     cube = Shapes.Cube(5)
-    camera.rotateXY(10)
-    rectangle = Shapes.Rectangle(3, 5, 4)
-    pyramid = Shapes.Pyramid(6, 3, 2)
+    #camera.rotateXY(10)
+    rectangle = Shapes.Rectangle(5, 5, 4,-5,1,-2)
+    pyramid = Shapes.Pyramid(-3, -4, 1)
     objArr ={cube,rectangle,pyramid}
     isRunning = True
     while isRunning:
+        projection = glGetFloatv(GL_PROJECTION_MATRIX)
         glLoadIdentity
         getKeys()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -93,6 +135,16 @@ def main():
         pygame.display.flip()
         pygame.time.wait(50)
 
+
+"""
+#######
+#######
+##
+## As of now, this just resets the game, will implement to display an object pop-up.
+##
+#######
+#######
+"""
 def selectObjPopUp():
     global screen,display,isRunning
     screen.quit()
@@ -117,7 +169,13 @@ def selectObjPopUp():
     isRunning=True
 
 
-##CHECKS TO SEE IF MOUSE CLICK, ROTATES CAMERA...
+"""
+#
+#
+# CURRENTLY DOES NOT WORK, SUPPOSED TO ROTATE USER CAMERA BASED ON DRAGGING MOUSE
+#
+#
+"""
 def checkClick(obj):
     mpos = pygame.mouse.get_pos()
     z = 2
