@@ -22,7 +22,7 @@ class Camera:
     ############################
     def rotateXY(self,angle):
         matrixManip = np.array(self.matrix)
-        print("Original: \n",matrixManip,"\n \nModified:")
+        print("Original: \n",matrixManip,"\n")
         """ In order to manipulate rotation, use cos/sin manipulations"""
         if len(self.dotResult) == 0:
             self.dotResult = np.array((matrixManip[0,0],matrixManip[1,1],matrixManip[2,2],
@@ -40,6 +40,7 @@ class Camera:
         self.dotResult[2] = matrixManip[2,1] *self.dotResult[1] + matrixManip[2,2] * self.dotResult[2]
         # Flatten array for use in glMatrix
         self.matrix=matrixManip.copy()
+        print("Modified: \n",self.matrix)
         matrixManip = matrixManip.flatten()
         singleDMatrix = np.zeros((16))
         # Populate a new array with elements from old array
@@ -48,8 +49,8 @@ class Camera:
         # Mapping values of matrix to m...
         m = map(float, singleDMatrix)
         m1 = (GLfloat * 16)(*m)
-        print(singleDMatrix[i])
-        glMatrixMode(GL_PROJECTION)
+
+        glMatrixMode(GL_MODELVIEW)
         ## Where the magic happens, manipulation happens here...
         glLoadMatrixf(m1)
         # Just in case matrix stack is empty...
