@@ -33,9 +33,8 @@ def createWindow():
     display = (screensize[0], screensize[1])
     #SETTING THE DISPLAY UP FOR PYGAME
     screen = pygame.display
-    screen.set_mode(display, DOUBLEBUF | OPENGL)
+    screen.set_mode(screensize, DOUBLEBUF | OPENGL)
     glMatrixMode(GL_PROJECTION);
-    glPopMatrix
     perspective = gluPerspective(90, (display[0] / display[1]), 0.3, 555.0)  # fovy, aspect, znear, zfar
 
 
@@ -60,19 +59,15 @@ def getKeys():
             if event.key == pygame.K_RIGHT: #Translating shapes
                 for obj in objArr:
                     obj.manipulateShape(-1,0,0)
-                    print(obj.getVertices())
             if event.key == pygame.K_LEFT:
                 for obj in objArr:
                     obj.manipulateShape(1, 0, 0)
-                    print(obj.getVertices())
             if event.key == pygame.K_UP:
                 for obj in objArr:
                     obj.manipulateShape(0, 0, 1)
-                    print(obj.getVertices())
             if event.key == pygame.K_DOWN:
                 for obj in objArr:
                     obj.manipulateShape(0, 0, -1)
-                    print(obj.getVertices())
             #  used to test z rotate, x rotate, y rotate
             if event.key == pygame.K_z: #Rotate sample on z axis
                 try:
@@ -80,35 +75,40 @@ def getKeys():
                 except:
                     ""
                 glRotatef(10, 0, 0, 1)
-                glPushMatrix
-                glMatrixMode(GL_MODELVIEW);
-                glLoadIdentity()
+                glPushMatrix()
+                glMatrixMode(GL_PROJECTION);
+                #glLoadIdentity()
             if event.key == pygame.K_x: #Rotate sample on x axis
                 try:
-                    glPopMatrix
+                    glPopMatrix()
                 except:
                     ""
                 glRotatef(10, 1, 0, 0)
-                glPushMatrix
-                glMatrixMode(GL_MODELVIEW);
-                glLoadIdentity()
+                glPushMatrix()
+                glMatrixMode(GL_PROJECTION);
+                #glLoadIdentity()
             if event.key == pygame.K_y: # Rotate sample
                 try:
-                    glPopMatrix
+                    glPopMatrix()
                 except:
                     ""
                 glRotatef(10, 0, 1, 0)
                 glPushMatrix
-                glMatrixMode(GL_MODELVIEW);
-                glLoadIdentity()
+                glMatrixMode(GL_PROJECTION);
+                #glLoadIdentity()
             if event.key == pygame.K_j: # RESTART GAME FOR NOW
                 isRunning=False
                 selectObjPopUp()
             if event.key == pygame.K_p: # DEBUGGING
                 print(glGetFloatv(GL_PROJECTION_MATRIX))
             if event.key == pygame.K_1: # When key 1 pressed, rotate on x/y axis
+                try:
+                    glPopMatrix()
+                except:
+                    ""
                 camera.rotateXY(10)
-                camera.setMatrix(projection)
+                glPushMatrix
+                glMatrixMode(GL_PROJECTION);
             projection = glGetFloatv(GL_PROJECTION_MATRIX)
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_position = pygame.mouse.get_pos()

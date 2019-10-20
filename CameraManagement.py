@@ -17,31 +17,45 @@ class Camera:
 
     def __init__(self,matrix):
         self.matrix=matrix
+        self.dotResult = []
     ###########################
     # Rotate along x axis...
     ############################
     def rotateXY(self,angle):
         matrixManip = np.array(self.matrix)
-        print("Original: \n",matrixManip,"\n")
         """ In order to manipulate rotation, use cos/sin manipulations"""
         if len(self.dotResult) == 0:
             self.dotResult = np.array((matrixManip[0,0],matrixManip[1,1],matrixManip[2,2],
                1))
-            print("SET DOT RESULT")
         # Manipulate Data, then transorm into dotResult...
         angleToRadians = np.deg2rad(angle)
-        matrixManip[1,1] = float(np.cos(angleToRadians))
-        matrixManip[1,2] = float(-(np.sin(angleToRadians)))
-        matrixManip[2,1] = float((np.sin(angleToRadians)))
-        matrixManip[2,2] = float(np.cos(angleToRadians))
+        if matrixManip[1,3] == 0:
+            matrixManip[1,1] = float(np.cos(angleToRadians))
+            matrixManip[1,2] = float(-(np.sin(angleToRadians)))
+        else:
+            matrixManip[1, 1] = float(np.cos(angleToRadians) * matrixManip[1,3])
+            matrixManip[1, 2] = float(-(np.sin(angleToRadians))* matrixManip[1,3])
+        #matrixManip[1,3] = float(-(np.sin(angleToRadians)))
+        if matrixManip[2,3]==0:
+            matrixManip[2,1] = float((np.sin(angleToRadians)))
+            matrixManip[2,2] = float(np.cos(angleToRadians))
+        else:
+            matrixManip[2,1] = float((np.sin(angleToRadians))* matrixManip[2,3])
+            matrixManip[2,2] = float(np.cos(angleToRadians)* matrixManip[2,3])
+            """
+            Manipulation of w values still not working...
+            W value is supposed to go up to 360 degree value of sin/cos
+            """
+        matrixManip[1,3]+=float(-(np.sin(angleToRadians)))
+        matrixManip[2,3]=matrixManip[2,2]
+        #matrixManip[2,3]= float(np.cos(angleToRadians))
         #cosy - sinz
         self.dotResult[1] = matrixManip[1,1] *self.dotResult[1] + matrixManip[1,2] * self.dotResult[2]
         #siny + cosz
         self.dotResult[2] = matrixManip[2,1] *self.dotResult[1] + matrixManip[2,2] * self.dotResult[2]
         # Flatten array for use in glMatrix
-        self.matrix=matrixManip.copy()
-        print("Modified: \n",self.matrix)
-        matrixManip = matrixManip.flatten()
+        self.matrix=matrixManip
+        matrixManip = self.matrix.flatten()
         singleDMatrix = np.zeros((16))
         # Populate a new array with elements from old array
         for i in range(0,len(matrixManip)):
@@ -49,16 +63,17 @@ class Camera:
         # Mapping values of matrix to m...
         m = map(float, singleDMatrix)
         m1 = (GLfloat * 16)(*m)
-
-        glMatrixMode(GL_MODELVIEW)
+        glMatrixMode(GL_PROJECTION)
         ## Where the magic happens, manipulation happens here...
         glLoadMatrixf(m1)
+
         # Just in case matrix stack is empty...
         try:
             glPopMatrix()
             glPushMatrix()
         except:
             glPushMatrix()
+        #glLoadIdentity()
         self.getDot()
 
     ###########################
