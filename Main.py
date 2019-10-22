@@ -108,7 +108,6 @@ def getKeys():
                 except:
                     ""
                 camera.rotateXY(10)
-                glPushMatrix()
                 glMatrixMode(GL_PROJECTION)
             if event.key == pygame.K_2: # When key 2 pressed, rotate on x/y axis
                 try:
@@ -123,7 +122,6 @@ def getKeys():
                 except:
                     ""
                 camera.rotateXZ(10)
-                glPushMatrix
                 glMatrixMode(GL_PROJECTION)
             if event.key == pygame.K_s: # When key s pressed, rotate on x/z axis
                 try:
@@ -132,13 +130,13 @@ def getKeys():
                     ""
                 camera.rotateXZ(-5)
                 glPushMatrix
-                glMatrixMode(GL_PROJECTION)
+                glMatrixMode(GL_PROJECTION);
             projection = glGetFloatv(GL_PROJECTION_MATRIX)
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_position = pygame.mouse.get_pos()
             glRotatef(2, mouse_position[1] - (display[1] / 2), mouse_position[0] -
                       (display[0] / 2), 1)
-        glMatrixMode(GL_PROJECTION)
+        glMatrixMode(GL_PROJECTION);
 
 """
 ############
@@ -194,19 +192,19 @@ def selectObjPopUp():
     global screen,display,isRunning
     screen.quit()
     screen.set_mode(display, DOUBLEBUF | OPENGL)
-    glMatrixMode(GL_PROJECTION)
+    glMatrixMode(GL_PROJECTION);
     glLoadIdentity()
     gluPerspective(45, (display[0] / display[1]), 0.1, 200.0)
     glScalef(0.01, 0.01, 0.01)
     gluLookAt(0, 0, 0, 0, 0, -1, 0, 1, 0)
     glBegin(GL_QUADS)
-    glTexCoord2f(0.0, 0.0)
+    glTexCoord2f(0.0, 0.0);
     glVertex3f(0.0, -50.0, -1000.0)
-    glTexCoord2f(1.0, 0.0)
+    glTexCoord2f(1.0, 0.0);
     glVertex3f(0.0, -50.0, 100.0)
-    glTexCoord2f(1.0, 1.0)
+    glTexCoord2f(1.0, 1.0);
     glVertex3f(100.0, -50.0, 1000.0)
-    glTexCoord2f(0.0, 1.0)
+    glTexCoord2f(0.0, 1.0);
     glVertex3f(100.0, -50.0, -1000.0)
     glEnd()
     screen.init()
