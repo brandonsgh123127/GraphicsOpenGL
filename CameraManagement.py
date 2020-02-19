@@ -19,6 +19,7 @@ class Camera:
     dotResult =[]
     matrix = None
     fullAngle = [0,0,0]
+    mapped =[]
     def __init__(self,matrix):
         self.matrix=matrix
         self.dotResult=np.array((self.matrix[0,0],self.matrix[1,1],self.matrix[2,2],1))
@@ -69,10 +70,10 @@ class Camera:
             singleDMatrix[i]=(float(matrixManip[i]))
         # Mapping values of matrix to m...
         m = map(float, singleDMatrix)
-        mapped = (GLfloat * 16)(*m)
+        self.mapped = (GLfloat * 16)(*m)
         glMatrixMode(GL_PROJECTION)
         ## Where the magic happens, manipulation happens here...
-        glLoadMatrixf(mapped)
+        glLoadMatrixf(self.mapped)
         """"
         # Just in case matrix stack is empty...
         # Push the matrix to stack...
@@ -88,6 +89,10 @@ class Camera:
         ############################
     """
     def rotateXZ(self,angle):
+        try:
+            glLoadMatrixf(self.mapped)
+        except:
+            print("No value for mapped!")
         self.fullAngle[2] += angle
         # self.fullAngle=360 % self.fullAngle
         matrixManip = np.array(self.matrix.copy())
@@ -126,10 +131,10 @@ class Camera:
             singleDMatrix[i] = (float(matrixManip[i]))
         # Mapping values of matrix to m...
         m = map(float, singleDMatrix)
-        mapped = (GLfloat * 16)(*m)
+        self.mapped = (GLfloat * 16)(*m)
         glMatrixMode(GL_PROJECTION)
         ## Where the magic happens, manipulation happens here...
-        glLoadMatrixf(mapped)
+        glLoadMatrixf(self.mapped)
         """"
         # Just in case matrix stack is empty...
         # Push the matrix to stack...

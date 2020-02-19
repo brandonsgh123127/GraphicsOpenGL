@@ -123,12 +123,13 @@ def getKeys():
                     ""
                 camera.rotateXZ(10)
                 glMatrixMode(GL_PROJECTION)
+                glPushMatrix
             if event.key == pygame.K_s: # When key s pressed, rotate on x/z axis
                 try:
                     glPopMatrix()
                 except:
                     ""
-                camera.rotateXZ(-5)
+                camera.rotateXZ(-10)
                 glPushMatrix
                 glMatrixMode(GL_PROJECTION);
             projection = glGetFloatv(GL_PROJECTION_MATRIX)
