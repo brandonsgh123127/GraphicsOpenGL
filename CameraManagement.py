@@ -19,7 +19,7 @@ class Camera(object):
     dotResult =[]
     matrix = None
     fullAngle = [0,0,0]
-    mapped = []
+    mapped =[]
     def __init__(self,matrix):
         self.matrix=matrix
         glPushMatrix()
@@ -96,6 +96,10 @@ class Camera(object):
         ############################
     """
     def rotateXZ(self,angle):
+        try:
+            glLoadMatrixf(self.mapped)
+        except:
+            print("No value for mapped!")
         self.fullAngle[2] += angle
         matrixManip = np.array(self.matrix.copy())
         """ In order to manipulate rotation, use cos/sin manipulations"""
@@ -139,7 +143,6 @@ class Camera(object):
         glMatrixMode(GL_PROJECTION)
         ## Where the magic happens, manipulation happens here...
         glLoadMatrixf(self.mapped)
-        print(self.matrix)
         """"
         # Just in case matrix stack is empty...
         # Push the matrix to stack...
