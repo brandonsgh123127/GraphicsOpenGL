@@ -4,6 +4,7 @@ import time
 from OpenGL.GL import *
 from OpenGL.GLU import *
 import pygame
+import numpy as np
 from pygame.examples.prevent_display_stretching import user32
 from pygame.locals import *
 import ctypes
@@ -18,7 +19,7 @@ global screen
 global isRunning
 global projection
 global camera
-
+global matrix
 
 """
 # CREATE A PYGAME DISPLAY AND OPENGL EVIRONMENT.
@@ -45,11 +46,14 @@ def createWindow():
 #####################################
 """
 def getKeys():
-    global objArr,isRunning,projection
+    global objArr,isRunning,projection,matrix
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             quit()
         elif event.type == pygame.KEYDOWN:
+            #matrix = camera.getMatrix()
+            #glLoadMatrixf(matrix)
+
             """
             ###################
             Translating Shapes
@@ -76,6 +80,8 @@ def getKeys():
                 glRotatef(10, 0, 0, 1)
                 glPushMatrix()
                 glMatrixMode(GL_PROJECTION)
+                print(glGetFloatv(GL_PROJECTION_MATRIX))
+
                 #glLoadIdentity()
             if event.key == pygame.K_x: #Rotate sample on x axis
                 try:
@@ -121,21 +127,20 @@ def getKeys():
                     glPopMatrix()
                 except:
                     ""
-                camera.rotateXZ(10)
+                camera.rotateXZ(-5)
                 glMatrixMode(GL_PROJECTION)
             if event.key == pygame.K_s: # When key s pressed, rotate on x/z axis
                 try:
                     glPopMatrix()
                 except:
                     ""
-                camera.rotateXZ(-5)
+                camera.rotateXZ(5)
                 glPushMatrix
                 glMatrixMode(GL_PROJECTION);
             projection = glGetFloatv(GL_PROJECTION_MATRIX)
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.MOUSEBUTTONUP:
             mouse_position = pygame.mouse.get_pos()
-            glRotatef(2, mouse_position[1] - (display[1] / 2), mouse_position[0] -
-                      (display[0] / 2), 1)
+
         glMatrixMode(GL_PROJECTION);
 
 """
@@ -168,7 +173,12 @@ def main():
     isRunning = True
     while isRunning:
         projection = glGetFloatv(GL_PROJECTION_MATRIX)
+        #print (projection)
         glLoadIdentity
+        try:
+            glLoadMatrixf(camera.getMapped())
+        except:
+            """"""
         getKeys()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         for i in objArr:

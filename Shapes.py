@@ -1,10 +1,6 @@
-import math
-import time
 #import PyOpenGL
 import numpy as np
 from OpenGL.GL import *
-import ctypes
-
 
 
 #**************************
