@@ -22,18 +22,18 @@ class Camera(object):
     mapped =[]
     def __init__(self,matrix):
         self.matrix=matrix
-        glPushMatrix()
-        glPushMatrix()
         self.dotResult=np.array((self.matrix[0,0],self.matrix[1,1],self.matrix[2,2],1))
     """"
     ###########################
     Rotate along x axis...
     ############################
     """
-    def rotateXY(self,angle):
+    def rotateZ(self,angle):
         self.fullAngle[0] += angle
-        #self.matrix=glGetFloatv(GL_PROJECTION_MATRIX)
-        #self.fullAngle=360 % self.fullAngle
+        try:
+            self.fullAngle[0] = self.fullAngle[0] % 360
+        except:
+            ""
         matrixManip = np.array(self.matrix.copy())
         """ In order to manipulate rotation, use cos/sin manipulations"""
         # Manipulate Data, then transform into dotResult...
@@ -42,27 +42,10 @@ class Camera(object):
         
         CHECKS TO SEE IF w VALUE IS 0.  IF NOT, THEN MULTIPLY RESULT BY IT.
         """
-        if matrixManip[1,3] == 0:
-            matrixManip[1,1] = float(np.cos(angleToRadians))
-            matrixManip[1,2] = float(-(np.sin(angleToRadians)))
-            matrixManip[0,2]=float(-(np.sin(angleToRadians))/4)
-            # matrixManip[0,3]=matrixManip[0,2]
-        else:
-            matrixManip[1, 1] = float(np.cos(angleToRadians) * matrixManip[1,3])
-            matrixManip[1, 2] = float(-(np.sin(angleToRadians))* matrixManip[1,3])
-        #matrixManip[1,3] = float(-(np.sin(angleToRadians)))
-        if matrixManip[2,3]==0:
-            matrixManip[2,1] = float((np.sin(angleToRadians)))
-            matrixManip[2,2] = float(np.cos(angleToRadians))
-        else:
-            matrixManip[2,1] = float((np.sin(angleToRadians))* matrixManip[2,3])
-            matrixManip[2,2] = float(np.cos(angleToRadians)* matrixManip[2,3])
-            """
-            Manipulation of w values still not working...
-            W value is supposed to go up to 360 degree value of sin/cos
-            """
-        matrixManip[1,3]+=float(-(np.sin(angleToRadians)))
-        matrixManip[2,3]=matrixManip[2,2]
+        matrixManip[1,1] = float(np.cos(angleToRadians))
+        matrixManip[0,1] = float(-(np.sin(angleToRadians)))
+        matrixManip[1,0]=float((np.sin(angleToRadians)))
+        matrixManip[0,0]=float((np.cos(angleToRadians)))
         self.dotResult[1] = (matrixManip[1,1] *self.dotResult[1]) + matrixManip[1,2] * self.dotResult[2]
         self.dotResult[2] = (matrixManip[2,1] *self.dotResult[1]) + matrixManip[2,2] * self.dotResult[2]
         self.dotResult[3] = 1
@@ -79,15 +62,13 @@ class Camera(object):
         glMatrixMode(GL_PROJECTION)
         ## Where the magic happens, manipulation happens here...
         glLoadMatrixf(self.mapped)
+        glPopMatrix()
         """"
         # Just in case matrix stack is empty...
         # Push the matrix to stack...
         """
-        try:
-            glPopMatrix()
-            glPushMatrix()
-        except:
-            glPushMatrix()
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
         print(self.dotResult)
         print (self.matrix)
     """
@@ -143,15 +124,7 @@ class Camera(object):
         glMatrixMode(GL_PROJECTION)
         ## Where the magic happens, manipulation happens here...
         glLoadMatrixf(self.mapped)
-        """"
-        # Just in case matrix stack is empty...
-        # Push the matrix to stack...
-        """
-        try:
-            glPopMatrix()
-            glPushMatrix()
-        except:
-            glPushMatrix()
+
     def rotateXU(self,angle):
         matrixManip = np.zeros((4,4))
     def rotateYZ(self,angle):

@@ -71,73 +71,35 @@ def getKeys():
             if event.key == pygame.K_DOWN:
                 for obj in objArr:
                     obj.manipulateShape(0, 0, -1)
-            #  used to test z rotate, x rotate, y rotate
-            if event.key == pygame.K_z: #Rotate sample on z axis
-                try:
-                    glPopMatrix()
-                except:
-                    ""
-                glRotatef(10, 0, 0, 1)
-                glPushMatrix()
-                glMatrixMode(GL_PROJECTION)
-                print(glGetFloatv(GL_PROJECTION_MATRIX))
-
-                #glLoadIdentity()
-            if event.key == pygame.K_x: #Rotate sample on x axis
-                try:
-                    glPopMatrix()
-                except:
-                    ""
-                glRotatef(10, 1, 0, 0)
-                glPushMatrix()
-                glMatrixMode(GL_PROJECTION)
-                #glLoadIdentity()
-            if event.key == pygame.K_y: # Rotate sample
-                try:
-                    glPopMatrix()
-                except:
-                    ""
-                glRotatef(10, 0, 1, 0)
-                glPushMatrix()
-                glMatrixMode(GL_PROJECTION)
 
             if event.key == pygame.K_j: # RESTART GAME FOR NOW
                 isRunning=False
                 selectObjPopUp()
-
             if event.key == pygame.K_p: # DEBUGGING
                 print(glGetFloatv(GL_PROJECTION_MATRIX))
 
-            if event.key == pygame.K_1: # When key 1 pressed, rotate on x/y axis
+            if event.key == pygame.K_1: # When key 1 pressed, rotate on Z axis
                 try:
                     glPopMatrix()
                 except:
                     ""
-                camera.rotateXY(10)
+                try:
+                    camera.rotateZ(10)
+                    glPushMatrix()
+                except:
+                    ""
                 glMatrixMode(GL_PROJECTION)
-            if event.key == pygame.K_2: # When key 2 pressed, rotate on x/y axis
+            if event.key == pygame.K_2: # When key 2 pressed, rotate on Z axis
                 try:
                     glPopMatrix()
                 except:
                     ""
-                camera.rotateXY(-5)
-
-            if event.key == pygame.K_a: # When key a pressed, rotate on x/z axis
                 try:
-                    glPopMatrix()
+                    camera.rotateZ(-10)
+                    glPushMatrix()
                 except:
                     ""
-                camera.rotateXZ(-5)
                 glMatrixMode(GL_PROJECTION)
-                glPushMatrix
-            if event.key == pygame.K_s: # When key s pressed, rotate on x/z axis
-                try:
-                    glPopMatrix()
-                except:
-                    ""
-                camera.rotateXZ(5)
-                glPushMatrix
-                glMatrixMode(GL_PROJECTION);
             projection = glGetFloatv(GL_PROJECTION_MATRIX)
         if event.type == pygame.MOUSEBUTTONUP:
             mouse_position = pygame.mouse.get_pos()
@@ -247,7 +209,7 @@ def checkClick(obj):
     glBegin(GL_LINES)
     for edge in obj.Edges:
         for vertex in edge:
-            glVertex4fv(obj.Vertices[vertex])
+            glVertex3fv(obj.Vertices[vertex])
     glEnd()
     glColor3f(1, 1 - onRect2, 1 - onRect2)
 
